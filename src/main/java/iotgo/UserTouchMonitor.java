@@ -1,7 +1,7 @@
 package iotgo;
 
 import iotgo.bean.UserTouchInfo;
-import iotgo.util.processDataUtil;
+import iotgo.util.ProcessDataUtil;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.flink.api.common.serialization.SimpleStringSchema;
 import org.apache.flink.api.java.utils.ParameterTool;
@@ -14,8 +14,8 @@ import ru.ivi.opensource.flinkclickhousesink.model.ClickhouseSinkConsts;
 
 import java.util.*;
 
-import static iotgo.util.Const.FLINK_PARALLELISM;
-import static iotgo.util.Const.KAFKA_START_TIME;
+import static iotgo.util.Const.*;
+import static iotgo.util.KafkaUtil.getKafkaProperties;
 
 @Slf4j
 public class UserTouchMonitor {
@@ -34,14 +34,6 @@ public class UserTouchMonitor {
 
         final StreamExecutionEnvironment env = StreamExecutionEnvironment.getExecutionEnvironment();
 
-        Properties kafkaProps = new Properties();
-        kafkaProps.put("bootstrap.servers", "ckafka.xiaobangtouzi.com:9092");
-        kafkaProps.put("group.id", "test-flink201908062111");
-        kafkaProps.put("key.deserializer", "org.apache.kafka.common.serialization.StringDeserializer");
-        kafkaProps.put("value.deserializer", "org.apache.kafka.common.serialization.StringDeserializer");
-        kafkaProps.put("auto.offset.reset", "latest");
-//        props.put("auto.offset.reset", "earliest");
-
         // create clickhouse sink props for sink
         Properties clickhouseProps = new Properties();
         clickhouseProps.put(ClickhouseSinkConsts.TARGET_TABLE_NAME, clickhouse_table);
@@ -50,7 +42,7 @@ public class UserTouchMonitor {
         Map<String, String> globalParameters = new HashMap<>();
 
         // clickhouse cluster properties
-        globalParameters.put(ClickhouseClusterSettings.CLICKHOUSE_HOSTS, "172.16.200.16:8123");
+        globalParameters.put(ClickhouseClusterSettings.CLICKHOUSE_HOSTS, CLICKHOUSE_HOSTS);
         globalParameters.put(ClickhouseClusterSettings.CLICKHOUSE_USER, "");
         globalParameters.put(ClickhouseClusterSettings.CLICKHOUSE_PASSWORD, "");
 
@@ -65,10 +57,10 @@ public class UserTouchMonitor {
         ParameterTool parameters = ParameterTool.fromMap(globalParameters);
         env.getConfig().setGlobalJobParameters(parameters);
 
-        getKafkaByFlink(kafka_topic_in,env,kafkaProps,FLINK_PARALLELISM,KAFKA_START_TIME,filterEventType).
+        getKafkaByFlink(kafka_topic_in,env, getKafkaProperties(),FLINK_PARALLELISM,KAFKA_START_TIME,filterEventType).
                 addSink(new ClickhouseSink(clickhouseProps)).name("user_touch_info_in clickhouse sink");
 
-        getKafkaByFlink(kafka_topic_out,env,kafkaProps,FLINK_PARALLELISM,KAFKA_START_TIME,filterEventType).
+        getKafkaByFlink(kafka_topic_out,env,getKafkaProperties(),FLINK_PARALLELISM,KAFKA_START_TIME,filterEventType).
                 addSink(new ClickhouseSink(clickhouseProps)).name("user_touch_info_out clickhouse sink");
 
         try {
@@ -104,9 +96,9 @@ public class UserTouchMonitor {
         }
         return env.addSource(consumer010).setParallelism(flinkParallelism)
                 //解析有用字段
-                .map(s -> processDataUtil.parseUserTouchInfo(s,kafkaTopic))
+                .map(s -> ProcessDataUtil.parseUserTouchInfo(s,kafkaTopic))
                 //过滤各个字段为null或者错误数据
-                .filter(processDataUtil::checkUserTouchInfo)
+                .filter(ProcessDataUtil::checkUserTouchInfo)
                 //过滤eventType不在列表中事件类型
                 .filter(f -> filterEventType.contains(f.getEventType()))
                 .map(UserTouchInfo::convertToCsv);

@@ -5,7 +5,7 @@ import com.alibaba.fastjson.JSONObject;
 import iotgo.bean.UserTouchInfo;
 import org.apache.commons.lang3.StringUtils;
 
-public class processDataUtil {
+public class ProcessDataUtil {
 
     public static String processString(JSONObject jsonObject,String key){
         Object o = jsonObject.get(key);
@@ -43,12 +43,13 @@ public class processDataUtil {
         else if (StringUtils.isEmpty(userTouchInfo.getOpenId())){
             return false;
         }
-        else if (0L == userTouchInfo.getFlowId()){
-            return false;
-        }
-        else if (0L == userTouchInfo.getNodeTypeId()){
-            return false;
-        }
+        //subscribe无下面两个字段，故去掉下面两个判断
+//        else if (0L == userTouchInfo.getFlowId()){
+//            return false;
+//        }
+//        else if (0L == userTouchInfo.getNodeTypeId()){
+//            return false;
+//        }
         else {
             return true;
         }
@@ -57,14 +58,14 @@ public class processDataUtil {
         JSONObject jsonObject = JSON.parseObject(s);
         JSONObject dataJson = JSON.parseObject(String.valueOf(jsonObject.get("data")));
         return UserTouchInfo.builder()
-                .userId(processDataUtil.processString(jsonObject,"userId"))
-                .eventTime(processDataUtil.processLong(jsonObject,"eventTime"))
-                .eventType(processDataUtil.processString(jsonObject,"eventType"))
-                .channel(processDataUtil.processString(jsonObject,"channel"))
-                .uuid(processDataUtil.processString(dataJson,"uuid"))
-                .openId(processDataUtil.processString(dataJson,"openId"))
-                .flowId(processDataUtil.processLong(dataJson,"flowId"))
-                .nodeTypeId(processDataUtil.processLong(dataJson,"nodeTypeId"))
+                .userId(ProcessDataUtil.processString(jsonObject,"userId"))
+                .eventTime(ProcessDataUtil.processLong(jsonObject,"eventTime"))
+                .eventType(ProcessDataUtil.processString(jsonObject,"eventType"))
+                .channel(ProcessDataUtil.processString(jsonObject,"channel"))
+                .uuid(ProcessDataUtil.processString(dataJson,"uuid"))
+                .openId(ProcessDataUtil.processString(dataJson,"openId"))
+                .flowId(ProcessDataUtil.processLong(dataJson,"flowId"))
+                .nodeTypeId(ProcessDataUtil.processLong(dataJson,"nodeTypeId"))
                 .kafkaTopic(kafkaTopic)
                 .build();
     }
