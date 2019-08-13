@@ -8,9 +8,7 @@
   <artifactId>fun</artifactId>
   <version>1.0-SNAPSHOT</version>
 
-  <name>fun</name>
-  <!-- FIXME change it to the project's website -->
-  <url>http://www.example.com</url>
+  <name>flink jobs</name>
 
   <properties>
     <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
@@ -45,6 +43,20 @@
       <groupId>com.alibaba</groupId>
       <artifactId>fastjson</artifactId>
       <version>1.2.59</version>
+    </dependency>
+
+    <!-- https://mvnrepository.com/artifact/org.projectlombok/lombok -->
+    <dependency>
+      <groupId>org.projectlombok</groupId>
+      <artifactId>lombok</artifactId>
+      <version>1.16.22</version>
+      <scope>provided</scope>
+    </dependency>
+
+    <dependency>
+      <groupId>ru.ivi.opensource</groupId>
+      <artifactId>flink-clickhouse-sink</artifactId>
+      <version>1.0.0</version>
     </dependency>
 
 
