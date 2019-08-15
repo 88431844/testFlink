@@ -22,6 +22,13 @@ public class UserTouchMonitor {
 
     public static void main(String[] args) {
 
+        //如果传入参数，则按照传入的时间戳进行消费，否者，按照当前时间消费
+        //例如：1565367042000(十三位)
+        long kafkaStartTimeStamp = Long.parseLong(args[0]);
+        if (0 == kafkaStartTimeStamp){
+            kafkaStartTimeStamp = System.currentTimeMillis();
+        }
+        //设置过滤的eventType
         HashSet<String> filterEventType = new HashSet<>();
         filterEventType.add("FLOW");
         filterEventType.add("subscribe");
@@ -57,10 +64,10 @@ public class UserTouchMonitor {
         ParameterTool parameters = ParameterTool.fromMap(globalParameters);
         env.getConfig().setGlobalJobParameters(parameters);
 
-        getKafkaByFlink(kafka_topic_in,env, getKafkaProperties(),FLINK_PARALLELISM,KAFKA_START_TIME,filterEventType).
+        getKafkaByFlink(kafka_topic_in,env, getKafkaProperties(),FLINK_PARALLELISM,kafkaStartTimeStamp,filterEventType).
                 addSink(new ClickhouseSink(clickhouseProps)).name("user_touch_info_in clickhouse sink");
 
-        getKafkaByFlink(kafka_topic_out,env,getKafkaProperties(),FLINK_PARALLELISM,KAFKA_START_TIME,filterEventType).
+        getKafkaByFlink(kafka_topic_out,env,getKafkaProperties(),FLINK_PARALLELISM,kafkaStartTimeStamp,filterEventType).
                 addSink(new ClickhouseSink(clickhouseProps)).name("user_touch_info_out clickhouse sink");
 
         try {
