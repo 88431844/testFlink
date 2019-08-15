@@ -3,6 +3,7 @@ package iotgo;
 import iotgo.bean.UserTouchInfo;
 import iotgo.util.ProcessDataUtil;
 import lombok.extern.slf4j.Slf4j;
+import org.apache.commons.lang3.StringUtils;
 import org.apache.flink.api.common.serialization.SimpleStringSchema;
 import org.apache.flink.api.java.utils.ParameterTool;
 import org.apache.flink.streaming.api.datastream.SingleOutputStreamOperator;
@@ -24,10 +25,13 @@ public class UserTouchMonitor {
 
         //如果传入参数，则按照传入的时间戳进行消费，否者，按照当前时间消费
         //例如：1565367042000(十三位)
-        long kafkaStartTimeStamp = Long.parseLong(args[0]);
-        if (0 == kafkaStartTimeStamp){
+        long kafkaStartTimeStamp;
+        if (args.length != 0) {
+            kafkaStartTimeStamp = Long.parseLong(args[0]);
+        } else {
             kafkaStartTimeStamp = System.currentTimeMillis();
         }
+
         //设置过滤的eventType
         HashSet<String> filterEventType = new HashSet<>();
         filterEventType.add("FLOW");
@@ -64,10 +68,10 @@ public class UserTouchMonitor {
         ParameterTool parameters = ParameterTool.fromMap(globalParameters);
         env.getConfig().setGlobalJobParameters(parameters);
 
-        getKafkaByFlink(kafka_topic_in,env, getKafkaProperties(),FLINK_PARALLELISM,kafkaStartTimeStamp,filterEventType).
+        getKafkaByFlink(kafka_topic_in, env, getKafkaProperties(), FLINK_PARALLELISM, kafkaStartTimeStamp, filterEventType).
                 addSink(new ClickhouseSink(clickhouseProps)).name("user_touch_info_in clickhouse sink");
 
-        getKafkaByFlink(kafka_topic_out,env,getKafkaProperties(),FLINK_PARALLELISM,kafkaStartTimeStamp,filterEventType).
+        getKafkaByFlink(kafka_topic_out, env, getKafkaProperties(), FLINK_PARALLELISM, kafkaStartTimeStamp, filterEventType).
                 addSink(new ClickhouseSink(clickhouseProps)).name("user_touch_info_out clickhouse sink");
 
         try {
@@ -78,12 +82,11 @@ public class UserTouchMonitor {
     }
 
     /**
-     *
-     * @param kafkaTopic 处理 kafka topic
-     * @param env flink 环境
-     * @param kafkaProps kafka 配置
+     * @param kafkaTopic       处理 kafka topic
+     * @param env              flink 环境
+     * @param kafkaProps       kafka 配置
      * @param flinkParallelism flink 并行度
-     * @param filterEventType kafka消息中过来eventType
+     * @param filterEventType  kafka消息中过来eventType
      * @return
      */
     public static SingleOutputStreamOperator<String> getKafkaByFlink(
@@ -98,12 +101,12 @@ public class UserTouchMonitor {
                 new SimpleStringSchema(),
                 kafkaProps);
 
-        if (0L != kafkaStartTime){
+        if (0L != kafkaStartTime) {
             consumer010.setStartFromTimestamp(kafkaStartTime);
         }
         return env.addSource(consumer010).setParallelism(flinkParallelism)
                 //解析有用字段
-                .map(s -> ProcessDataUtil.parseUserTouchInfo(s,kafkaTopic))
+                .map(s -> ProcessDataUtil.parseUserTouchInfo(s, kafkaTopic))
                 //过滤各个字段为null或者错误数据
                 .filter(ProcessDataUtil::checkUserTouchInfo)
                 //过滤eventType不在列表中事件类型
