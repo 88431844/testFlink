@@ -73,11 +73,14 @@ public class UserTouchMonitor {
         ParameterTool parameters = ParameterTool.fromMap(globalParameters);
         env.getConfig().setGlobalJobParameters(parameters);
 
-        getKafkaByFlink(kafka_topic_in, env, getKafkaProperties(kafkaGroupId), FLINK_PARALLELISM, kafkaStartTimeStamp, filterEventType)
-                .addSink(new ClickhouseSink(clickhouseProps)).name("user_touch_info_in clickhouse sink");
+//        getKafkaByFlink(kafka_topic_in, env, getKafkaProperties(kafkaGroupId), FLINK_PARALLELISM, kafkaStartTimeStamp, filterEventType)
+//                .addSink(new ClickhouseSink(clickhouseProps)).name("user_touch_info_in clickhouse sink");
 
-        getKafkaByFlink(kafka_topic_out, env, getKafkaProperties(kafkaGroupId), FLINK_PARALLELISM, kafkaStartTimeStamp, filterEventType)
-                .addSink(new ClickhouseSink(clickhouseProps)).name("user_touch_info_out clickhouse sink");
+//        getKafkaByFlink(kafka_topic_out, env, getKafkaProperties(kafkaGroupId), FLINK_PARALLELISM, kafkaStartTimeStamp, filterEventType)
+//                .addSink(new ClickhouseSink(clickhouseProps)).name("user_touch_info_out clickhouse sink");
+
+        getKafkaByFlink(kafka_topic_out, env, getKafkaProperties("event-flink"),
+                FLINK_PARALLELISM, 1564650773000L, filterEventType).print();
 
         try {
             env.execute("test flink kafka sink clickhouse");
