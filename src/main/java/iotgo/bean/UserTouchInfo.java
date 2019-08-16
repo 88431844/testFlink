@@ -19,6 +19,7 @@ public class UserTouchInfo {
     private String openId;
     private long flowId;
     private long nodeTypeId;
+    private String nextFlowId;
     private String kafkaTopic;
 
     public static String convertToCsv(UserTouchInfo userTouchInfo) {
@@ -53,6 +54,10 @@ public class UserTouchInfo {
 
         builder.append(userTouchInfo.getNodeTypeId());
         builder.append(", ");
+
+        builder.append("'");
+        builder.append(userTouchInfo.getNextFlowId());
+        builder.append("', ");
 
         builder.append("'");
         builder.append(userTouchInfo.getKafkaTopic());

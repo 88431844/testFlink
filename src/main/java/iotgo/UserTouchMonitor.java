@@ -31,12 +31,17 @@ public class UserTouchMonitor {
         } else {
             kafkaStartTimeStamp = System.currentTimeMillis();
         }
+        String kafkaGroupId = null;
+        if (args.length == 2 && !StringUtils.isEmpty(args[1])){
+            kafkaGroupId = args[1];
+        }
 
         //设置过滤的eventType
         HashSet<String> filterEventType = new HashSet<>();
         filterEventType.add("FLOW");
         filterEventType.add("subscribe");
         filterEventType.add("subscribe-nature");
+        filterEventType.add("ACCOUNT_WECHAT_MATCH");
 
         final String kafka_topic_in = "event-stream";
         final String kafka_topic_out = "action-stream";
@@ -68,11 +73,11 @@ public class UserTouchMonitor {
         ParameterTool parameters = ParameterTool.fromMap(globalParameters);
         env.getConfig().setGlobalJobParameters(parameters);
 
-        getKafkaByFlink(kafka_topic_in, env, getKafkaProperties(), FLINK_PARALLELISM, kafkaStartTimeStamp, filterEventType).
-                addSink(new ClickhouseSink(clickhouseProps)).name("user_touch_info_in clickhouse sink");
+        getKafkaByFlink(kafka_topic_in, env, getKafkaProperties(kafkaGroupId), FLINK_PARALLELISM, kafkaStartTimeStamp, filterEventType)
+                .addSink(new ClickhouseSink(clickhouseProps)).name("user_touch_info_in clickhouse sink");
 
-        getKafkaByFlink(kafka_topic_out, env, getKafkaProperties(), FLINK_PARALLELISM, kafkaStartTimeStamp, filterEventType).
-                addSink(new ClickhouseSink(clickhouseProps)).name("user_touch_info_out clickhouse sink");
+        getKafkaByFlink(kafka_topic_out, env, getKafkaProperties(kafkaGroupId), FLINK_PARALLELISM, kafkaStartTimeStamp, filterEventType)
+                .addSink(new ClickhouseSink(clickhouseProps)).name("user_touch_info_out clickhouse sink");
 
         try {
             env.execute("test flink kafka sink clickhouse");
@@ -96,6 +101,8 @@ public class UserTouchMonitor {
             int flinkParallelism,
             long kafkaStartTime,
             HashSet<String> filterEventType) {
+        log.info("getKafkaByFlink kafkaStartTime :" + kafkaStartTime );
+
         FlinkKafkaConsumer010<String> consumer010 = new FlinkKafkaConsumer010<>(
                 kafkaTopic,
                 new SimpleStringSchema(),
@@ -108,8 +115,6 @@ public class UserTouchMonitor {
                 //解析有用字段
                 .map(s -> ProcessDataUtil.parseUserTouchInfo(s, kafkaTopic))
                 //过滤各个字段为null或者错误数据
-                .filter(ProcessDataUtil::checkUserTouchInfo)
-                //过滤eventType不在列表中事件类型
                 .filter(f -> filterEventType.contains(f.getEventType()))
                 .map(UserTouchInfo::convertToCsv);
     }

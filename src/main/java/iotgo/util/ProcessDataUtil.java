@@ -24,6 +24,7 @@ public class ProcessDataUtil {
             return Long.parseLong(value);
         }
     }
+    @Deprecated
     public static boolean checkUserTouchInfo(UserTouchInfo userTouchInfo){
         if (StringUtils.isEmpty(userTouchInfo.getUserId())){
             return false;
@@ -40,9 +41,9 @@ public class ProcessDataUtil {
         else if (StringUtils.isEmpty(userTouchInfo.getUuid())){
             return false;
         }
-        else if (StringUtils.isEmpty(userTouchInfo.getOpenId())){
-            return false;
-        }
+//        else if (StringUtils.isEmpty(userTouchInfo.getOpenId())){
+//            return false;
+//        }
         //subscribe无下面两个字段，故去掉下面两个判断
 //        else if (0L == userTouchInfo.getFlowId()){
 //            return false;
@@ -57,6 +58,7 @@ public class ProcessDataUtil {
     public static UserTouchInfo parseUserTouchInfo(String s,String kafkaTopic){
         JSONObject jsonObject = JSON.parseObject(s);
         JSONObject dataJson = JSON.parseObject(String.valueOf(jsonObject.get("data")));
+        JSONObject actionJson = JSON.parseObject(String.valueOf(jsonObject.get("actionJson")));
         return UserTouchInfo.builder()
                 .userId(ProcessDataUtil.processString(jsonObject,"userId"))
                 .eventTime(ProcessDataUtil.processLong(jsonObject,"eventTime"))
@@ -65,6 +67,7 @@ public class ProcessDataUtil {
                 .uuid(ProcessDataUtil.processString(dataJson,"uuid"))
                 .openId(ProcessDataUtil.processString(dataJson,"openId"))
                 .flowId(ProcessDataUtil.processLong(dataJson,"flowId"))
+                .nextFlowId(ProcessDataUtil.processString(actionJson,"nextFlowId"))
                 .nodeTypeId(ProcessDataUtil.processLong(dataJson,"nodeTypeId"))
                 .kafkaTopic(kafkaTopic)
                 .build();

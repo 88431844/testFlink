@@ -1,5 +1,6 @@
 package iotgo;
 
+import org.apache.commons.lang3.StringUtils;
 import org.apache.flink.api.common.serialization.SimpleStringSchema;
 import org.apache.flink.streaming.api.datastream.SingleOutputStreamOperator;
 import org.apache.flink.streaming.api.environment.StreamExecutionEnvironment;
@@ -15,14 +16,17 @@ public class TestKafka {
 
 
         FlinkKafkaConsumer010<String> consumer010 = new FlinkKafkaConsumer010<>(
-                "event-stream",
+                "action-stream",
+//                "event-stream",
                 new SimpleStringSchema(),
-                getKafkaProperties());
+                getKafkaProperties("test_flink"));
 
-        consumer010.setStartFromTimestamp(KAFKA_START_TIME);
+        long seventDay = 1564650773000L;
+        consumer010.setStartFromTimestamp(seventDay);
 
 
         SingleOutputStreamOperator<String> kafka_in = env.addSource(consumer010).setParallelism(1);
+//                .filter(k -> StringUtils.contains(k,"ACCOUNT_WECHAT_MATCH"));
         kafka_in.print();
 
         try {
