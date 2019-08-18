@@ -1,6 +1,7 @@
 package iotgo;
 
 import iotgo.bean.UserTouchInfo;
+import iotgo.util.CommonUtil;
 import iotgo.util.KafkaUtil;
 import iotgo.util.ProcessDataUtil;
 import lombok.extern.slf4j.Slf4j;
@@ -26,12 +27,7 @@ public class UserTouchMonitor {
 
         //如果传入参数，则按照传入的时间戳进行消费，否者，按照当前时间消费
         //例如：1565367042000(十三位)
-        long kafkaStartTimeStamp;
-        if (args.length != 0) {
-            kafkaStartTimeStamp = Long.parseLong(args[0]);
-        } else {
-            kafkaStartTimeStamp = System.currentTimeMillis();
-        }
+        long kafkaStartTimeStamp = CommonUtil.getArgsTimeStamp(args);
         String kafkaGroupId = null;
         if (args.length == 2 && !StringUtils.isEmpty(args[1])){
             kafkaGroupId = args[1];
