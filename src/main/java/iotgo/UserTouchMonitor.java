@@ -1,14 +1,13 @@
 package iotgo;
 
 import iotgo.bean.UserTouchInfo;
+import iotgo.util.KafkaUtil;
 import iotgo.util.ProcessDataUtil;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.lang3.StringUtils;
-import org.apache.flink.api.common.serialization.SimpleStringSchema;
 import org.apache.flink.api.java.utils.ParameterTool;
 import org.apache.flink.streaming.api.datastream.SingleOutputStreamOperator;
 import org.apache.flink.streaming.api.environment.StreamExecutionEnvironment;
-import org.apache.flink.streaming.connectors.kafka.FlinkKafkaConsumer010;
 import ru.ivi.opensource.flinkclickhousesink.ClickhouseSink;
 import ru.ivi.opensource.flinkclickhousesink.model.ClickhouseClusterSettings;
 import ru.ivi.opensource.flinkclickhousesink.model.ClickhouseSinkConsts;
@@ -20,6 +19,8 @@ import static iotgo.util.KafkaUtil.getKafkaProperties;
 
 @Slf4j
 public class UserTouchMonitor {
+
+    public final static String flinkJobName = "userTouchMonitor";
 
     public static void main(String[] args) {
 
@@ -73,14 +74,14 @@ public class UserTouchMonitor {
         ParameterTool parameters = ParameterTool.fromMap(globalParameters);
         env.getConfig().setGlobalJobParameters(parameters);
 
-        getKafkaByFlink(kafka_topic_in, env, getKafkaProperties(kafkaGroupId), FLINK_PARALLELISM, kafkaStartTimeStamp, filterEventType)
+        getUserMonitorKafka(kafka_topic_in, env, getKafkaProperties(kafkaGroupId), FLINK_PARALLELISM, kafkaStartTimeStamp, filterEventType)
                 .addSink(new ClickhouseSink(clickhouseProps)).name("user_touch_info_in clickhouse sink");
 
-        getKafkaByFlink(kafka_topic_out, env, getKafkaProperties(kafkaGroupId), FLINK_PARALLELISM, kafkaStartTimeStamp, filterEventType)
+        getUserMonitorKafka(kafka_topic_out, env, getKafkaProperties(kafkaGroupId), FLINK_PARALLELISM, kafkaStartTimeStamp, filterEventType)
                 .addSink(new ClickhouseSink(clickhouseProps)).name("user_touch_info_out clickhouse sink");
 
         try {
-            env.execute("test flink kafka sink clickhouse");
+            env.execute(flinkJobName);
         } catch (Exception e) {
             e.printStackTrace();
         }
@@ -94,24 +95,15 @@ public class UserTouchMonitor {
      * @param filterEventType  kafka消息中过来eventType
      * @return
      */
-    public static SingleOutputStreamOperator<String> getKafkaByFlink(
+    public static SingleOutputStreamOperator<String> getUserMonitorKafka(
             String kafkaTopic,
             StreamExecutionEnvironment env,
             Properties kafkaProps,
             int flinkParallelism,
             long kafkaStartTime,
             HashSet<String> filterEventType) {
-        log.info("getKafkaByFlink kafkaStartTime :" + kafkaStartTime );
 
-        FlinkKafkaConsumer010<String> consumer010 = new FlinkKafkaConsumer010<>(
-                kafkaTopic,
-                new SimpleStringSchema(),
-                kafkaProps);
-
-        if (0L != kafkaStartTime) {
-            consumer010.setStartFromTimestamp(kafkaStartTime);
-        }
-        return env.addSource(consumer010).setParallelism(flinkParallelism)
+        return KafkaUtil.getKafkaByFlink(kafkaTopic,env,kafkaProps,flinkParallelism,kafkaStartTime)
                 //解析有用字段
                 .map(s -> ProcessDataUtil.parseUserTouchInfo(s, kafkaTopic))
                 //过滤各个字段为null或者错误数据
