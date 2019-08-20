@@ -13,7 +13,10 @@ import java.util.HashSet;
 
 public class MySqlBinlogWatcher {
 
+    //线上库
     private final static String mysqlBinlogTopic = "mysql-220";
+    //QA库
+//    private final static String mysqlBinlogTopic = "mysql-115";
     private final static String kafkaGroupId = "mysqlBinlogWatcher_groupId_001";
     private final static String flinkJobName = "mysqlBinlogWatcher";
     //数据团队机器人
@@ -30,6 +33,7 @@ public class MySqlBinlogWatcher {
         mysqlDDLfilter.add("table-create");
         mysqlDDLfilter.add("table-alter");
         mysqlDDLfilter.add("table-drop");
+//        mysqlDDLfilter.add("insert");
 //        mysqlDDLfilter.add("update");
 
         KafkaUtil.getKafkaByFlink(
@@ -38,12 +42,14 @@ public class MySqlBinlogWatcher {
                 KafkaUtil.getKafkaProperties(kafkaGroupId),
                 Const.FLINK_PARALLELISM,
                 CommonUtil.getArgsTimeStamp(args))
+//                1566290608000L)
                 //Json to bean
                 .map(m -> JSON.parseObject(m, MysqlBinlogInfo.class))
                 //过滤出目标事件
                 .filter(m -> mysqlDDLfilter.contains(m.getType()))
                 //请求HTTP 企业微信机器人
                 .map(m -> HttpUtil.doPost(wxRobotUrl, getReqJson(m)));
+//                .print();
         try {
             env.execute(flinkJobName);
         } catch (Exception e) {
