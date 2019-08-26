@@ -16,5 +16,6 @@ public class MysqlBinlogInfo {
     private long xid;
     private boolean commit;
     private String data;
+    private String kafkaTopic;
 
 }

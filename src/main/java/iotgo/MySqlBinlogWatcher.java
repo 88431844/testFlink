@@ -13,8 +13,10 @@ import java.util.HashSet;
 
 public class MySqlBinlogWatcher {
 
-    //线上库
-    private final static String mysqlBinlogTopic = "mysql-220";
+    //线上库220
+    private final static String mysqlBinlogTopic_220 = "mysql-220";
+    //线上库227
+    private final static String mysqlBinlogTopic_227 = "mysql-227";
     //QA库
 //    private final static String mysqlBinlogTopic = "mysql-115";
     private final static String kafkaGroupId = "mysqlBinlogWatcher_groupId_001";
@@ -36,20 +38,11 @@ public class MySqlBinlogWatcher {
 //        mysqlDDLfilter.add("insert");
 //        mysqlDDLfilter.add("update");
 
-        KafkaUtil.getKafkaByFlink(
-                mysqlBinlogTopic,
-                env,
-                KafkaUtil.getKafkaProperties(kafkaGroupId),
-                Const.FLINK_PARALLELISM,
-                CommonUtil.getArgsTimeStamp(args))
-//                1566290608000L)
-                //Json to bean
-                .map(m -> JSON.parseObject(m, MysqlBinlogInfo.class))
-                //过滤出目标事件
-                .filter(m -> mysqlDDLfilter.contains(m.getType()))
-                //请求HTTP 企业微信机器人
-                .map(m -> HttpUtil.doPost(wxRobotUrl, getReqJson(m)));
-//                .print();
+        //220监控
+        watcher(mysqlBinlogTopic_220,kafkaGroupId,env,args,mysqlDDLfilter);
+        //227监控
+        watcher(mysqlBinlogTopic_227,kafkaGroupId,env,args,mysqlDDLfilter);
+
         try {
             env.execute(flinkJobName);
         } catch (Exception e) {
@@ -57,10 +50,60 @@ public class MySqlBinlogWatcher {
         }
     }
 
+    /**
+     * 拼接请求json
+     * @param m mysql binlog 内容
+     * @return
+     */
     private static JSONObject getReqJson(MysqlBinlogInfo m) {
         String content = JSON.toJSONString(m)
                 .replace("\"", "")
                 .replace("\\", "");
         return JSON.parseObject("{\"msgtype\":\"text\",\"text\":{\"content\":\"" + content + "\"}}");
+    }
+
+    /**
+     * mysql binlog 监控
+     * @param kafkaTopic
+     * @param kafkaGroupId
+     * @param env
+     * @param args
+     * @param mysqlDDLfilter
+     */
+    private static void watcher(
+            String kafkaTopic,
+            String kafkaGroupId,
+            StreamExecutionEnvironment env,
+            String[] args,
+            HashSet<String> mysqlDDLfilter) {
+        KafkaUtil.getKafkaByFlink(
+                kafkaTopic,
+                env,
+                KafkaUtil.getKafkaProperties(kafkaGroupId),
+                Const.FLINK_PARALLELISM,
+                CommonUtil.getArgsTimeStamp(args))
+//                1566290608000L)
+                //Json to bean
+                .map(m -> parseBean(m,kafkaTopic))
+                //过滤出目标事件
+                .filter(m -> mysqlDDLfilter.contains(m.getType()))
+                //请求HTTP 企业微信机器人
+                .map(m -> HttpUtil.doPost(wxRobotUrl, getReqJson(m)));
+//                .print();
+    }
+
+    /**
+     * 将Kafka中json 转换为bean
+     * @param json
+     * @param kafkaTopic
+     * @return
+     */
+    private static MysqlBinlogInfo parseBean(String json, String kafkaTopic){
+        MysqlBinlogInfo mysqlBinlogInfo = JSON.parseObject(json,MysqlBinlogInfo.class);
+        if (null != mysqlBinlogInfo){
+            mysqlBinlogInfo.setKafkaTopic(kafkaTopic);
+        }
+        return mysqlBinlogInfo;
+
     }
 }
