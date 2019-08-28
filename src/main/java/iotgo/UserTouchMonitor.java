@@ -40,19 +40,19 @@ public class UserTouchMonitor {
         filterEventType.add("subscribe-nature");
         filterEventType.add("ACCOUNT_WECHAT_MATCH");
 
-//        final String kafka_topic_in = "event-stream";
-//        final String kafka_topic_out = "action-stream";
-//        final String clickhouse_table = "user_touch_monitor.user_touch_info";
-        final String kafka_topic_in_qa = "event-stream-qa";
-        final String kafka_topic_out_qa = "action-stream-qa";
-        final String clickhouse_table_qa = "user_touch_monitor.user_touch_info_qa";
+        final String kafka_topic_in = "event-stream";
+        final String kafka_topic_out = "action-stream";
+        final String clickhouse_table = "user_touch_monitor.user_touch_info";
+//        final String kafka_topic_in_qa = "event-stream-qa";
+//        final String kafka_topic_out_qa = "action-stream-qa";
+//        final String clickhouse_table_qa = "user_touch_monitor.user_touch_info_qa";
 
 
         final StreamExecutionEnvironment env = StreamExecutionEnvironment.getExecutionEnvironment();
 
         // create clickhouse sink props for sink
         Properties clickhouseProps = new Properties();
-        clickhouseProps.put(ClickhouseSinkConsts.TARGET_TABLE_NAME, clickhouse_table_qa);
+        clickhouseProps.put(ClickhouseSinkConsts.TARGET_TABLE_NAME, clickhouse_table);
         clickhouseProps.put(ClickhouseSinkConsts.MAX_BUFFER_SIZE, "10000");
 
         Map<String, String> globalParameters = new HashMap<>();
@@ -73,10 +73,10 @@ public class UserTouchMonitor {
         ParameterTool parameters = ParameterTool.fromMap(globalParameters);
         env.getConfig().setGlobalJobParameters(parameters);
 
-        getUserMonitorKafka(kafka_topic_in_qa, env, getKafkaProperties(kafkaGroupId), FLINK_PARALLELISM, kafkaStartTimeStamp, filterEventType)
+        getUserMonitorKafka(kafka_topic_in, env, getKafkaProperties(kafkaGroupId), FLINK_PARALLELISM, kafkaStartTimeStamp, filterEventType)
                 .addSink(new ClickhouseSink(clickhouseProps)).name("user_touch_info_in clickhouse sink");
 
-        getUserMonitorKafka(kafka_topic_out_qa, env, getKafkaProperties(kafkaGroupId), FLINK_PARALLELISM, kafkaStartTimeStamp, filterEventType)
+        getUserMonitorKafka(kafka_topic_out, env, getKafkaProperties(kafkaGroupId), FLINK_PARALLELISM, kafkaStartTimeStamp, filterEventType)
                 .addSink(new ClickhouseSink(clickhouseProps)).name("user_touch_info_out clickhouse sink");
 
         try {
