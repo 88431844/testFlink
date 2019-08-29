@@ -11,14 +11,12 @@ import org.apache.flink.streaming.api.environment.StreamExecutionEnvironment;
 
 import java.util.HashSet;
 
+import static iotgo.util.Const.mysqlBinlogTopic_220;
+import static iotgo.util.Const.mysqlBinlogTopic_227;
+
 public class MySqlBinlogWatcher {
 
-    //线上库220
-    private final static String mysqlBinlogTopic_220 = "mysql-220";
-    //线上库227
-    private final static String mysqlBinlogTopic_227 = "mysql-227";
-    //QA库
-//    private final static String mysqlBinlogTopic = "mysql-115";
+
     private final static String kafkaGroupId = "mysqlBinlogWatcher_groupId_001";
     private final static String flinkJobName = "mysqlBinlogWatcher";
     //数据团队机器人

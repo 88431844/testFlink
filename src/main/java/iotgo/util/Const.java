@@ -14,4 +14,14 @@ public class Const {
      * clickhoust hosts 地址
      */
     public static final String CLICKHOUSE_HOSTS = "172.16.200.16:8123";
+
+    /**
+     * kafka topic
+     */
+    //线上库220
+    public final static String mysqlBinlogTopic_220 = "mysql-220";
+    //线上库227
+    public final static String mysqlBinlogTopic_227 = "mysql-227";
+    //QA库
+    public final static String mysqlBinlogTopic_115 = "mysql-115";
 }

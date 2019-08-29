@@ -8,7 +8,7 @@ import org.apache.flink.streaming.connectors.kafka.FlinkKafkaConsumer010;
 
 import static iotgo.util.Const.KAFKA_START_TIME;
 import static iotgo.util.KafkaUtil.getKafkaProperties;
-
+@Deprecated
 public class TestKafka {
 
     public static void main(String[] args) {
