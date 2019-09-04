@@ -24,4 +24,19 @@ public class Const {
     public final static String mysqlBinlogTopic_227 = "mysql-227";
     //QA库
     public final static String mysqlBinlogTopic_115 = "mysql-115";
+
+    /**
+     * 用户标签系统相关常量
+     */
+    //user_center 数据库
+    public final static String DATABASE_USER_CENTER = "user_center";
+    //account_wechat_match 表
+    public final static String TABLE_ACCOUNT_WECHAT_MATCH = "account_wechat_match";
+    //添加 操作
+    public final static String OP_TYPE_INSERT = "insert";
+    //更新 操作
+    public final static String OP_TYPE_UPDATE = "update";
+
+
+
 }

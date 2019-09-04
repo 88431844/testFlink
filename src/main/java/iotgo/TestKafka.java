@@ -1,5 +1,6 @@
 package iotgo;
 
+import iotgo.util.Const;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.flink.api.common.serialization.SimpleStringSchema;
 import org.apache.flink.streaming.api.datastream.SingleOutputStreamOperator;
@@ -16,13 +17,13 @@ public class TestKafka {
 
 
         FlinkKafkaConsumer010<String> consumer010 = new FlinkKafkaConsumer010<>(
-                "action-stream",
+                Const.mysqlBinlogTopic_220,
 //                "event-stream",
                 new SimpleStringSchema(),
                 getKafkaProperties("test_flink"));
 
-        long seventDay = 1564650773000L;
-        consumer010.setStartFromTimestamp(seventDay);
+//        long seventDay = 1564650773000L;
+//        consumer010.setStartFromTimestamp(seventDay);
 
 
         SingleOutputStreamOperator<String> kafka_in = env.addSource(consumer010).setParallelism(1);
