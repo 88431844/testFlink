@@ -2,6 +2,8 @@ package iotgo.bean;
 
 import lombok.*;
 
+import java.util.HashMap;
+
 @Data
 @Builder
 @NoArgsConstructor
@@ -15,7 +17,7 @@ public class MysqlBinlogInfo {
     private long ts;
     private long xid;
     private boolean commit;
-    private String data;
+    private HashMap<String,Object> data;
     private String kafkaTopic;
 
 }

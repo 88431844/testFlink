@@ -28,15 +28,35 @@ public class Const {
     /**
      * 用户标签系统相关常量
      */
+    /**
+     * 数据库名称
+     */
     //user_center 数据库
     public final static String DATABASE_USER_CENTER = "user_center";
+
+    /**
+     * 表名称
+     */
     //account_wechat_match 表
     public final static String TABLE_ACCOUNT_WECHAT_MATCH = "account_wechat_match";
+
+    /**
+     * 表操作
+     */
     //添加 操作
     public final static String OP_TYPE_INSERT = "insert";
     //更新 操作
     public final static String OP_TYPE_UPDATE = "update";
 
+    /**
+     * 标签类型
+     */
+    //触达系统
+    public final static String TAG_TYPE_USER_TOUCH = "USER_TOUCH";
 
-
+    /**
+     * 标签名称
+     */
+    //添加好友
+    public final static String TAG_NAME_ADD_FRIEND = "ADD_FRIEND";
 }
