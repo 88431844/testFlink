@@ -1,17 +1,27 @@
 package iotgo.sinks;
 
 import iotgo.bean.UserTag;
+import iotgo.util.JedisUtil;
 import org.apache.flink.configuration.Configuration;
 import org.apache.flink.streaming.api.functions.sink.RichSinkFunction;
+import redis.clients.jedis.Jedis;
 
 import java.sql.Connection;
 import java.sql.DriverManager;
 import java.sql.PreparedStatement;
 import java.util.ResourceBundle;
 
-public class MySql_UserTag_Sink extends RichSinkFunction<UserTag> {
+import static iotgo.util.Const.PROCESSED_TAG_REDIS_PREFIX;
+import static iotgo.util.Const.TAG_TO_PROCESS_REDIS_PREFIX;
+
+/**
+ * 标签sink
+ * 将用户标签信息添加到
+ */
+public class UserTagSink extends RichSinkFunction<UserTag> {
     private Connection connection = null;
     private PreparedStatement ps = null;
+    private Jedis jedis;
 
     /**
      * 一、open()方法中建立连接，这样不用每次invoke的时候都要建立连接和释放连接。
@@ -31,6 +41,8 @@ public class MySql_UserTag_Sink extends RichSinkFunction<UserTag> {
         String sql = "insert into user_tag(uuid,tag_name,tag_desc,tag_type,create_at,update_at) values(?,?,?,?,now(),now()) ON DUPLICATE KEY UPDATE update_at = now() ;";
         //3.获得执行语句
         ps = connection.prepareStatement(sql);
+
+        jedis = JedisUtil.getJedis();
     }
 
 
@@ -39,16 +51,25 @@ public class MySql_UserTag_Sink extends RichSinkFunction<UserTag> {
      */
     @Override
     public void invoke(UserTag userTag) throws Exception {
-        try {
-            //4.组装数据，执行插入操作
-            ps.setString(1, userTag.getUuid());
-            ps.setString(2, userTag.getTagName());
-            ps.setString(3, userTag.getTagDesc());
-            ps.setString(4, userTag.getTagType());
-            ps.executeUpdate();
-        } catch (Exception e) {
-            e.printStackTrace();
+        //如果处理标签逻辑后，有该标签，则将标签信息存入MySql中，否则，只存入Redis中的处理标志位，并清除待处理标志。
+        if (userTag.isHaveTag()){
+            try {
+                //4.组装数据，执行插入操作
+                ps.setString(1, userTag.getUuid());
+                ps.setString(2, userTag.getTagName());
+                ps.setString(3, userTag.getTagDesc());
+                ps.setString(4, userTag.getTagType());
+                ps.executeUpdate();
+            } catch (Exception e) {
+                e.printStackTrace();
+            }
         }
+
+        String userTagRedis = userTag.getUuid() + "_" + userTag.getTagName();
+        //将Redis中待处理标志位，清除
+        jedis.del(TAG_TO_PROCESS_REDIS_PREFIX + userTagRedis);
+        //将标签信息存入MySql中；将已经计算用户标签标志位存入Redis中
+        jedis.set(PROCESSED_TAG_REDIS_PREFIX + userTagRedis, String.valueOf(System.currentTimeMillis()));
     }
 
     @Override
@@ -61,6 +82,8 @@ public class MySql_UserTag_Sink extends RichSinkFunction<UserTag> {
         if (ps != null) {
             ps.close();
         }
+
+        JedisUtil.close(jedis);
     }
 
 }

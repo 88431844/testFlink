@@ -24,7 +24,10 @@ public class Const {
     public final static String mysqlBinlogTopic_227 = "mysql-227";
     //QA库
     public final static String mysqlBinlogTopic_115 = "mysql-115";
-
+    /**
+     * 待计算标签
+     */
+    public final static String to_process_tag = "to_process_tag";
     /**
      * 用户标签系统相关常量
      */
@@ -59,4 +62,18 @@ public class Const {
      */
     //添加好友
     public final static String TAG_NAME_ADD_FRIEND = "ADD_FRIEND";
+    /**
+     * 已经处理的标签
+     */
+    public final static String PROCESSED_TAG_REDIS_PREFIX = "processed_tag_";
+    /**
+     * 待处理标签 Kafka topic
+     */
+    public final static String TAG_TO_PROCESS_KAFKA_TOPIC = "tag_to_process";
+    /**
+     * 待处理标签 Redis key
+     */
+    public final static String TAG_TO_PROCESS_REDIS_PREFIX = "tag_to_process_";
+
+
 }

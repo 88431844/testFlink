@@ -1,12 +1,11 @@
 package iotgo.tagSys;
 
 import iotgo.bean.UserTag;
-import iotgo.sinks.MySql_UserTag_Sink;
+import iotgo.sinks.UserTagSink;
 import iotgo.util.Const;
 import iotgo.util.FilterUtil;
 import iotgo.util.KafkaUtil;
 import lombok.extern.slf4j.Slf4j;
-import org.apache.flink.streaming.api.collector.selector.OutputSelector;
 import org.apache.flink.streaming.api.datastream.SingleOutputStreamOperator;
 import org.apache.flink.streaming.api.environment.StreamExecutionEnvironment;
 
@@ -37,7 +36,7 @@ public class ProcessTags {
                         .tagType(TAG_TYPE_USER_TOUCH)
                         .tagDesc("")
                         .build())
-                .addSink(new MySql_UserTag_Sink());
+                .addSink(new UserTagSink());
 //        /**
 //         * 处理 购买财商课标签 逻辑
 //         */

@@ -22,11 +22,11 @@ public class KafkaUtil {
         }
         log.info("getKafkaProperties kafkaGroupId:" + kafkaGroupId);
         Properties kafkaProps = new Properties();
-        kafkaProps.put("bootstrap.servers", "ckafka.xiaobangtouzi.com:9092");
+        kafkaProps.put("bootstrap.servers", "localhost:9092");
         kafkaProps.put("group.id", kafkaGroupId);
         kafkaProps.put("key.deserializer", "org.apache.kafka.common.serialization.StringDeserializer");
         kafkaProps.put("value.deserializer", "org.apache.kafka.common.serialization.StringDeserializer");
-        kafkaProps.put("auto.offset.reset", "latest");
+        kafkaProps.put("auto.offset.reset", "earliest");
         return kafkaProps;
     }
 

@@ -17,10 +17,11 @@ public class TestKafka {
 
 
         FlinkKafkaConsumer010<String> consumer010 = new FlinkKafkaConsumer010<>(
-                Const.mysqlBinlogTopic_220,
+//                Const.mysqlBinlogTopic_220,
+                Const.TAG_TO_PROCESS_KAFKA_TOPIC,
 //                "event-stream",
                 new SimpleStringSchema(),
-                getKafkaProperties("test_flink"));
+                getKafkaProperties("test_flink2"));
 
 //        long seventDay = 1564650773000L;
 //        consumer010.setStartFromTimestamp(seventDay);

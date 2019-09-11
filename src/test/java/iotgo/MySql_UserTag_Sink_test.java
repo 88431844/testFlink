@@ -1,7 +1,7 @@
 package iotgo;
 
 import iotgo.bean.UserTag;
-import iotgo.sinks.MySql_UserTag_Sink;
+import iotgo.sinks.UserTagSink;
 import org.apache.flink.streaming.api.datastream.DataStream;
 import org.apache.flink.streaming.api.environment.StreamExecutionEnvironment;
 
@@ -18,7 +18,7 @@ public class MySql_UserTag_Sink_test {
         );
 
         //3.将数据写入到自定义的sink中（这里是mysql）
-        userTagDataStreamSource.addSink(new MySql_UserTag_Sink());
+        userTagDataStreamSource.addSink(new UserTagSink());
 
         try {
             //4.触发流执行

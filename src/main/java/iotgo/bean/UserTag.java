@@ -16,7 +16,11 @@ public class UserTag {
 
     private String tagType;
 
-    private Date createAt;
+    private long createAt;
 
-    private Date updateAt;
+    private long updateAt;
+    /**
+     * 是否拥有该标签
+     */
+    private boolean haveTag;
 }
