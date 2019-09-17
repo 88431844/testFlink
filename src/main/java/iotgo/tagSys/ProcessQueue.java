@@ -6,6 +6,7 @@ import iotgo.tagSys.tagLogic.UserTouchLogic;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.flink.streaming.api.environment.StreamExecutionEnvironment;
 
+import static iotgo.util.CommonUtil.getArgsTimeStamp;
 import static iotgo.util.Const.*;
 import static iotgo.util.KafkaUtil.getKafkaByFlink;
 import static iotgo.util.KafkaUtil.getKafkaProperties;
@@ -23,7 +24,7 @@ public class ProcessQueue {
 
         final StreamExecutionEnvironment env = StreamExecutionEnvironment.getExecutionEnvironment();
 
-        getKafkaByFlink(TAG_TO_PROCESS_KAFKA_TOPIC, env, getKafkaProperties("flink_ProcessQueue"), 1, 0L)
+        getKafkaByFlink(TAG_TO_PROCESS_KAFKA_TOPIC, env, getKafkaProperties("flink_ProcessQueue"), 1, getArgsTimeStamp(args))
                 .map(m -> {
                     String uuid = m.split("_", 2)[0];
                     String tagName = m.split("_", 2)[1];
@@ -33,6 +34,9 @@ public class ProcessQueue {
                     switch (tagName) {
                         case TAG_NAME_ADD_FRIEND:
                             userTag = UserTouchLogic.addFriend(uuid);
+                            break;
+                        case TAG_NAME_BUY_INSURANCE:
+                            userTag = UserTouchLogic.buyInsurance(uuid);
                             break;
                         default:
                             userTag = UserTag.builder().uuid(null).build();

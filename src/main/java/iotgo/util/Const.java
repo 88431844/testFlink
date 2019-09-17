@@ -11,7 +11,7 @@ public class Const {
      */
     public static final long KAFKA_START_TIME = 1565367042000L;
     /**
-     * clickhoust hosts 地址
+     * clickhouse hosts 地址
      */
     public static final String CLICKHOUSE_HOSTS = "172.16.200.16:8123";
 
@@ -24,10 +24,7 @@ public class Const {
     public final static String mysqlBinlogTopic_227 = "mysql-227";
     //QA库
     public final static String mysqlBinlogTopic_115 = "mysql-115";
-    /**
-     * 待计算标签
-     */
-    public final static String to_process_tag = "to_process_tag";
+
     /**
      * 用户标签系统相关常量
      */
@@ -36,12 +33,20 @@ public class Const {
      */
     //user_center 数据库
     public final static String DATABASE_USER_CENTER = "user_center";
+    //payment 数据库
+    public final static String DATABASE_PAYMENT = "payment";
+
 
     /**
      * 表名称
      */
     //account_wechat_match 表
     public final static String TABLE_ACCOUNT_WECHAT_MATCH = "account_wechat_match";
+    //payment_order 表
+    public final static String TABLE_PAYMENT_ORDER = "payment_order";
+
+
+
 
     /**
      * 表操作
@@ -62,6 +67,8 @@ public class Const {
      */
     //添加好友
     public final static String TAG_NAME_ADD_FRIEND = "ADD_FRIEND";
+    //买保险服务
+    public final static String TAG_NAME_BUY_INSURANCE = "BUY_INSURANCE";
     /**
      * 已经处理的标签
      */

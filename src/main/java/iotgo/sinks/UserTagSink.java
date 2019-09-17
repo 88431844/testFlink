@@ -1,7 +1,9 @@
 package iotgo.sinks;
 
+import com.alibaba.fastjson.JSON;
 import iotgo.bean.UserTag;
 import iotgo.util.JedisUtil;
+import lombok.extern.slf4j.Slf4j;
 import org.apache.flink.configuration.Configuration;
 import org.apache.flink.streaming.api.functions.sink.RichSinkFunction;
 import redis.clients.jedis.Jedis;
@@ -18,6 +20,7 @@ import static iotgo.util.Const.TAG_TO_PROCESS_REDIS_PREFIX;
  * 标签sink
  * 将用户标签信息添加到
  */
+@Slf4j
 public class UserTagSink extends RichSinkFunction<UserTag> {
     private Connection connection = null;
     private PreparedStatement ps = null;
@@ -50,9 +53,11 @@ public class UserTagSink extends RichSinkFunction<UserTag> {
      * 二、每个元素的插入都要调用一次invoke()方法，这里主要进行插入操作
      */
     @Override
-    public void invoke(UserTag userTag) throws Exception {
+    public void invoke(UserTag userTag) {
+        log.info("-----------------------------------------");
+        log.info("UserTagSink:" + JSON.toJSONString(userTag));
         //如果处理标签逻辑后，有该标签，则将标签信息存入MySql中，否则，只存入Redis中的处理标志位，并清除待处理标志。
-        if (userTag.isHaveTag()){
+        if (userTag.isHaveTag()) {
             try {
                 //4.组装数据，执行插入操作
                 ps.setString(1, userTag.getUuid());
@@ -66,10 +71,16 @@ public class UserTagSink extends RichSinkFunction<UserTag> {
         }
 
         String userTagRedis = userTag.getUuid() + "_" + userTag.getTagName();
+
         //将Redis中待处理标志位，清除
-        jedis.del(TAG_TO_PROCESS_REDIS_PREFIX + userTagRedis);
+        String redisDelKey = TAG_TO_PROCESS_REDIS_PREFIX + userTagRedis;
+        jedis.del(redisDelKey);
+        log.info("redis del key:" + redisDelKey);
+
         //将标签信息存入MySql中；将已经计算用户标签标志位存入Redis中
-        jedis.set(PROCESSED_TAG_REDIS_PREFIX + userTagRedis, String.valueOf(System.currentTimeMillis()));
+        String redisSetKey = PROCESSED_TAG_REDIS_PREFIX + userTagRedis;
+        jedis.set(redisSetKey, String.valueOf(System.currentTimeMillis()));
+        log.info("redis set key:" + redisSetKey);
     }
 
     @Override

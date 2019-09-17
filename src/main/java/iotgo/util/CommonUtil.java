@@ -12,7 +12,7 @@ public class CommonUtil {
         if (args.length != 0) {
             timeStamp = Long.parseLong(args[0]);
         } else {
-            timeStamp = System.currentTimeMillis();
+            timeStamp = 0L;
         }
         return timeStamp;
     }
