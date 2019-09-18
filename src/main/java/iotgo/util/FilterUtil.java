@@ -49,8 +49,7 @@ public class FilterUtil {
      */
     public static boolean filterBuyInsurance(MysqlBinlogInfo mysqlBinlogInfo) {
         if (mysqlBinlogInfo.getType().equals(OP_TYPE_INSERT) || mysqlBinlogInfo.getType().equals(OP_TYPE_UPDATE)) {
-            if (isNotEmpty(String.valueOf(mysqlBinlogInfo.getData().get("trade_info")))
-                    && isNotEmpty(String.valueOf(mysqlBinlogInfo.getData().get("status")))
+            if (isNotEmpty(String.valueOf(mysqlBinlogInfo.getData().get("status")))
                     && isNotEmpty(String.valueOf(mysqlBinlogInfo.getData().get("app_goods_sn")))) {
                 return mysqlBinlogInfo.getData().get("app_goods_sn").equals("ins1v1")
                         && mysqlBinlogInfo.getData().get("status").equals("1");
