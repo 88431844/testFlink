@@ -2,6 +2,9 @@ package iotgo.tagSys;
 
 import iotgo.bean.UserTag;
 import iotgo.sinks.UserTagSink;
+import iotgo.tagSys.realtimeLogic.ProcessAddFriend;
+import iotgo.tagSys.realtimeLogic.ProcessBuyInsurance;
+import iotgo.tagSys.realtimeLogic.ProcessEffectiveAdvisory;
 import iotgo.util.Const;
 import iotgo.util.FilterUtil;
 import iotgo.util.KafkaUtil;
@@ -31,26 +34,13 @@ public class ProcessTags {
         /**
          * 处理 买保险服务标签 逻辑
          */
-        filterMySqlBinlogSub(originalStreamStr_220, DATABASE_PAYMENT, TABLE_PAYMENT_ORDER)
-                .filter(FilterUtil::filterBuyInsurance)
-                .map(m -> UserTag.builder()
-                        .uuid(String.valueOf(m.getData().get("uuid")))
-                        .tagName(TAG_NAME_BUY_INSURANCE)
-                        .tagType(TAG_TYPE_USER_TOUCH)
-                        .haveTag(true)
-                        .build())
-                .addSink(new UserTagSink());
+        ProcessBuyInsurance processBuyInsurance = new ProcessBuyInsurance();
+        processBuyInsurance.process(originalStreamStr_220).addSink(new UserTagSink());
         /**
          * 处理 加好友标签 逻辑
          */
-        filterMySqlBinlog(originalStreamStr_220, DATABASE_USER_CENTER, TABLE_ACCOUNT_WECHAT_MATCH, OP_TYPE_INSERT)
-                .map(m -> UserTag.builder()
-                        .uuid(String.valueOf(m.getData().get("uuid")))
-                        .tagName(TAG_NAME_ADD_FRIEND)
-                        .tagType(TAG_TYPE_USER_TOUCH)
-                        .haveTag(true)
-                        .build())
-                .addSink(new UserTagSink());
+        ProcessAddFriend processAddFriend = new ProcessAddFriend();
+        processAddFriend.process(originalStreamStr_220).addSink(new UserTagSink());
         /**
          * 处理 购买财商课标签 逻辑
          */
@@ -59,7 +49,8 @@ public class ProcessTags {
         /**
          * 处理 咨询过标签 逻辑
          */
-
+        ProcessEffectiveAdvisory processEffectiveAdvisory = new ProcessEffectiveAdvisory();
+        processEffectiveAdvisory.process(originalStreamStr_220).addSink(new UserTagSink());
 
         try {
             env.execute("ProcessTags");

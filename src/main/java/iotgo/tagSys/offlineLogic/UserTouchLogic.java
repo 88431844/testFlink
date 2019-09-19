@@ -1,4 +1,4 @@
-package iotgo.tagSys.tagLogic;
+package iotgo.tagSys.offlineLogic;
 
 import iotgo.bean.UserTag;
 import iotgo.util.ClickHouseUtil;
@@ -35,7 +35,18 @@ public class UserTouchLogic {
         log.info("buyInsurance clickhouse count:" + count);
         return UserTag.builder().uuid(uuid).tagName(TAG_NAME_BUY_INSURANCE).tagType(TAG_TYPE_USER_TOUCH).haveTag(haveTag(count)).build();
     }
+    /**
+     * 离线逻辑 有效咨询
+     * @param uuid
+     * @return
+     */
+    public static UserTag effectiveAdvisory(String uuid) {
+        String where = " event = 0 and content_type = 1 and uuid = " + uuid;
+        long count = ClickHouseUtil.getCountByCondition(TABLE_WECHAT_EVENT,where);
+        log.info("effectiveAdvisory clickhouse count:" + count);
+        return UserTag.builder().uuid(uuid).tagName(TAG_NAME_EFFECTIVE_ADVISORY).tagType(TAG_TYPE_USER_TOUCH).haveTag(haveTag(count)).build();
 
+    }
     private static boolean haveTag(long count) {
         //如果有该uuid记录，则说明该uuid
         return 1 <= count;

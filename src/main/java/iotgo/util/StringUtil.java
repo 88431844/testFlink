@@ -12,6 +12,11 @@ public class StringUtil {
         return !isEmpty(str);
     }
 
+    public static String getUserTagRedis(String uuid,String tagName){
+        return uuid + "_" + tagName;
+    }
+
+
     public static void main(String[] args) {
         System.out.println(StringUtil.isEmpty("null"));
     }

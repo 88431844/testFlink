@@ -2,7 +2,7 @@ package iotgo.tagSys;
 
 import iotgo.bean.UserTag;
 import iotgo.sinks.UserTagSink;
-import iotgo.tagSys.tagLogic.UserTouchLogic;
+import iotgo.tagSys.offlineLogic.UserTouchLogic;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.flink.streaming.api.environment.StreamExecutionEnvironment;
 
@@ -37,6 +37,9 @@ public class ProcessQueue {
                             break;
                         case TAG_NAME_BUY_INSURANCE:
                             userTag = UserTouchLogic.buyInsurance(uuid);
+                            break;
+                        case TAG_NAME_EFFECTIVE_ADVISORY:
+                            userTag = UserTouchLogic.effectiveAdvisory(uuid);
                             break;
                         default:
                             userTag = UserTag.builder().uuid(null).build();

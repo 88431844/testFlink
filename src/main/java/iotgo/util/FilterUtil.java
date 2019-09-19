@@ -42,20 +42,23 @@ public class FilterUtil {
                 .filter(f -> database.equals(f.getDatabase()) && table.equals(f.getTable()));
     }
 
+
+
     /**
-     * 买保险服务 过滤条件
-     * @param mysqlBinlogInfo
+     * 获取 特定 MySql binlog 流
+     * @param mysqlBinlog
+     * @param database
+     * @param table
+     * @param type
      * @return
      */
-    public static boolean filterBuyInsurance(MysqlBinlogInfo mysqlBinlogInfo) {
-        if (mysqlBinlogInfo.getType().equals(OP_TYPE_INSERT) || mysqlBinlogInfo.getType().equals(OP_TYPE_UPDATE)) {
-            if (isNotEmpty(String.valueOf(mysqlBinlogInfo.getData().get("status")))
-                    && isNotEmpty(String.valueOf(mysqlBinlogInfo.getData().get("app_goods_sn")))) {
-                return mysqlBinlogInfo.getData().get("app_goods_sn").equals("ins1v1")
-                        && mysqlBinlogInfo.getData().get("status").equals("1");
-            }
+    public static SingleOutputStreamOperator<MysqlBinlogInfo> getMysqlBinlogInfo(SingleOutputStreamOperator<String> mysqlBinlog, String database, String table, String type) {
+        if (null == type){
+            return filterMySqlBinlogSub(mysqlBinlog,database,table);
         }
-        return false;
+        return filterMySqlBinlog(mysqlBinlog,database,table,type);
     }
+
+
 
 }

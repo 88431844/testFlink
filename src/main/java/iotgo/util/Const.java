@@ -44,6 +44,8 @@ public class Const {
     public final static String TABLE_ACCOUNT_WECHAT_MATCH = "account_wechat_match";
     //payment_order 表
     public final static String TABLE_PAYMENT_ORDER = "payment_order";
+    //wechat_event 表
+    public final static String TABLE_WECHAT_EVENT = "wechat_event";
 
 
 
@@ -69,6 +71,8 @@ public class Const {
     public final static String TAG_NAME_ADD_FRIEND = "ADD_FRIEND";
     //买保险服务
     public final static String TAG_NAME_BUY_INSURANCE = "BUY_INSURANCE";
+    //有效咨询
+    public final static String TAG_NAME_EFFECTIVE_ADVISORY = "EFFECTIVE_ADVISORY";
     /**
      * 已经处理的标签
      */

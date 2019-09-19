@@ -15,6 +15,7 @@ import java.util.ResourceBundle;
 
 import static iotgo.util.Const.PROCESSED_TAG_REDIS_PREFIX;
 import static iotgo.util.Const.TAG_TO_PROCESS_REDIS_PREFIX;
+import static iotgo.util.StringUtil.getUserTagRedis;
 
 /**
  * 标签sink
@@ -70,7 +71,7 @@ public class UserTagSink extends RichSinkFunction<UserTag> {
             }
         }
 
-        String userTagRedis = userTag.getUuid() + "_" + userTag.getTagName();
+        String userTagRedis = getUserTagRedis(userTag.getUuid(),userTag.getTagName());
 
         //将Redis中待处理标志位，清除
         String redisDelKey = TAG_TO_PROCESS_REDIS_PREFIX + userTagRedis;
