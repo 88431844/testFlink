@@ -1,6 +1,5 @@
 package iotgo.util;
 
-import com.alibaba.fastjson.JSON;
 import com.alibaba.fastjson.JSONObject;
 import lombok.extern.slf4j.Slf4j;
 
@@ -11,12 +10,12 @@ import org.apache.commons.httpclient.HttpException;
 import org.apache.commons.httpclient.HttpStatus;
 import org.apache.commons.httpclient.methods.GetMethod;
 import org.apache.commons.httpclient.params.HttpMethodParams;
-import org.apache.flink.hadoop.shaded.org.apache.http.HttpEntity;
-import org.apache.flink.hadoop.shaded.org.apache.http.HttpResponse;
-import org.apache.flink.hadoop.shaded.org.apache.http.client.methods.HttpPost;
-import org.apache.flink.hadoop.shaded.org.apache.http.entity.StringEntity;
-import org.apache.flink.hadoop.shaded.org.apache.http.impl.client.DefaultHttpClient;
-import org.apache.flink.hadoop.shaded.org.apache.http.util.EntityUtils;
+import org.apache.http.HttpEntity;
+import org.apache.http.HttpResponse;
+import org.apache.http.client.methods.HttpPost;
+import org.apache.http.entity.StringEntity;
+import org.apache.http.impl.client.DefaultHttpClient;
+import org.apache.http.util.EntityUtils;
 
 import java.io.IOException;
 
