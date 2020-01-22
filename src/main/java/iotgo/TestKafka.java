@@ -26,15 +26,15 @@ public class TestKafka {
 
 
         FlinkKafkaConsumer010<String> consumer010 = new FlinkKafkaConsumer010<>(
-                Const.mysqlBinlogTopic_220,
+                Const.mysqlBinlogTopic_115,
 //                Const.TAG_TO_PROCESS_KAFKA_TOPIC,
 //                "event-stream",
                 new SimpleStringSchema(),
-                getKafkaProperties("test_flink3"));
+                getKafkaProperties("test_flink4"));
 
         //设置从哪天开始消费Kafka
-//        long startDay = 1568736054000L;
-//        consumer010.setStartFromTimestamp(startDay);
+        long startDay = 1569636045000L;
+        consumer010.setStartFromTimestamp(startDay);
 
 
         SingleOutputStreamOperator<String> kafka_in = env.addSource(consumer010).setParallelism(1);
@@ -95,7 +95,9 @@ public class TestKafka {
 //                    return f.getData().get("content_type").equals("1") && f.getData().get("event").equals("0");
 //                })
 
-        FilterUtil.filterMySqlBinlogSub(kafka_in, "user_center", "wechat_event")
+//        kafka_in.print();
+
+        FilterUtil.filterMySqlBinlogSub(kafka_in, "account", "test001")
                 .print();
 //                        .filter(f -> f.getData().get("app_goods_sn").equals("ins1v1") || f.getData().get("status").equals("1"))
 //                .filter(f -> isNotEmpty(String.valueOf(f.getData().get("trade_info")))
