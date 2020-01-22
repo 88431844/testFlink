@@ -20,9 +20,9 @@ public class MySqlBinlogWatcher {
     private final static String kafkaGroupId = "mysqlBinlogWatcher_groupId_001";
     private final static String flinkJobName = "mysqlBinlogWatcher";
     //数据团队机器人
-    private final static String wxRobotUrl = "https://qyapi.weixin.qq.com/cgi-bin/webhook/send?key=1b8cd3fc-3778-4c22-a865-15fab45f6816";
+    private final static String wxRobotUrl = "";
     //测试机器人
-//    private final static String wxRobotUrl = "https://qyapi.weixin.qq.com/cgi-bin/webhook/send?key=dc9adabc-def3-4bf3-9662-c619a57bad81";
+//    private final static String wxRobotUrl = "";
 
 
     public static void main(String[] args) {
