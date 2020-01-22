@@ -2,7 +2,6 @@ package iotgo.bean;
 
 import lombok.*;
 
-import java.util.Date;
 
 @Data
 @Builder

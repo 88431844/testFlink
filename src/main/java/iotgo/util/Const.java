@@ -73,6 +73,8 @@ public class Const {
     public final static String TAG_NAME_BUY_INSURANCE = "BUY_INSURANCE";
     //有效咨询
     public final static String TAG_NAME_EFFECTIVE_ADVISORY = "EFFECTIVE_ADVISORY";
+    //购买财商课
+    public final static String TAG_NAME_BUY_FBCOURSE = "BUY_FBCOURSE";
     /**
      * 已经处理的标签
      */

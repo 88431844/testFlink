@@ -1,9 +1,11 @@
-package iotgo.tagSys.realtimeLogic;
+package iotgo.tagSys.realtimeLogic.impl;
 
 import iotgo.bean.MysqlBinlogInfo;
 import iotgo.bean.UserTag;
+import iotgo.tagSys.realtimeLogic.ProcessTagIF;
 import iotgo.util.JedisUtil;
 import org.apache.flink.streaming.api.datastream.SingleOutputStreamOperator;
+import org.apache.flink.table.api.java.StreamTableEnvironment;
 
 import static iotgo.util.Const.*;
 import static iotgo.util.Const.TAG_TYPE_USER_TOUCH;
@@ -16,7 +18,7 @@ import static iotgo.util.StringUtil.isNotEmpty;
  */
 public class ProcessEffectiveAdvisory implements ProcessTagIF {
     @Override
-    public SingleOutputStreamOperator<UserTag> process(SingleOutputStreamOperator<String> sso) {
+    public SingleOutputStreamOperator<UserTag> process(SingleOutputStreamOperator<String> sso, StreamTableEnvironment tableEnvironment) {
 
         return getMysqlBinlogInfo(sso, DATABASE_USER_CENTER, TABLE_WECHAT_EVENT, null)
                 .filter(this::filter)

@@ -1,8 +1,10 @@
-package iotgo.tagSys.realtimeLogic;
+package iotgo.tagSys.realtimeLogic.impl;
 
 import iotgo.bean.MysqlBinlogInfo;
 import iotgo.bean.UserTag;
+import iotgo.tagSys.realtimeLogic.ProcessTagIF;
 import org.apache.flink.streaming.api.datastream.SingleOutputStreamOperator;
+import org.apache.flink.table.api.java.StreamTableEnvironment;
 
 import static iotgo.util.Const.*;
 import static iotgo.util.Const.TAG_TYPE_USER_TOUCH;
@@ -12,10 +14,10 @@ import static iotgo.util.StringUtil.isNotEmpty;
 /**
  * 处理 买保险服务 标签 逻辑
  */
-public class ProcessBuyInsurance implements ProcessTagIF{
+public class ProcessBuyInsurance implements ProcessTagIF {
 
     @Override
-    public SingleOutputStreamOperator<UserTag> process(SingleOutputStreamOperator<String> sso) {
+    public SingleOutputStreamOperator<UserTag> process(SingleOutputStreamOperator<String> sso, StreamTableEnvironment tableEnvironment) {
 
         return getMysqlBinlogInfo(sso, DATABASE_PAYMENT, TABLE_PAYMENT_ORDER,null)
                 .filter(this::filter)
